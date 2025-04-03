@@ -1,8 +1,8 @@
 import React from 'react';
 
-function EditButton({id, nameUser, tel, email, imgProfile, confirmEdit}) {
+function EditButton({id, nameUser, tel, email, imgProfile, salario, confirmEdit}) {
     const handleEdit = async() => {
-        fetch(`http://localhost/editContactServer.php?id=${id}&nameUser=${nameUser}&tel=${tel}&email=${email}&imgProfile=${imgProfile}`, {
+        fetch(`https://sistemadecontroledeterritório.com/phpServer/editContactServer.php?id=${id}&nameUser=${nameUser}&tel=${tel}&email=${email}&imgProfile=${imgProfile}&salario=${salario}`, {
             method: "PUT"
         }).then(() => {
                 console.log("Editado com sucesso");

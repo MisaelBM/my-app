@@ -9,19 +9,42 @@ function Contatos({reloadView}) {
     const [editEmail, setEditEmail] = useState('');
     const [editTel, setEditTel] = useState('');
     const [editImgProfile, setEditImgProfile] = useState('');
+    const [editSalario, setEditSalario] = useState('');
     const [editId, setEditId] = useState('');
+    const [Dollar, setDollar] = useState(0);
+    const [Euro, setEuro] = useState(0);
     const [editActivee, setEditActive] = useState(false);
     
-    const setVarEdit = (id, name, email, tel, imgProfile) => {
+    const fetchCurrencyRates = async () => {
+        fetch(`https://economia.awesomeapi.com.br/last/USD-BRL`, {
+            method: "GET"
+        }).then(response => response.json())
+        .then(data => {
+            setDollar((1 / data.USDBRL.bid).toFixed(2));
+        })
+        .catch(error => console.error);
+        fetch(`https://economia.awesomeapi.com.br/last/EUR-BRL`, {
+            method: "GET"
+        }).then(response => response.json())
+        .then(data => {
+            setEuro((1 / data.EURBRL.bid).toFixed(2));    
+        })
+        .catch(error => console.error("Erro no upload", error));
+    };
+    
+    fetchCurrencyRates();
+    
+    const setVarEdit = (id, name, email, tel, imgProfile, salario) => {
         setEditName(name);
         setEditEmail(email);
         setEditTel(tel);
         setEditImgProfile(imgProfile);
+        setEditSalario(salario);
         setEditId(id);
     };
 
     const ViewContact = async() => {
-        fetch("http://localhost/viewContactsServer.php", {
+        fetch("https://sistemadecontroledeterritório.com/phpServer/viewContactsServer.php", {
             method: "GET"
         }).then(response => response.json())
             .then(data => {
@@ -29,9 +52,9 @@ function Contatos({reloadView}) {
                 setEditActive(false);
                 setResponse(data.map((contact) => (
                     <div className="contacts-content" key={contact.id}>
-                        <div className="contacts-content-btrn">
+                        <div className="contacts-content-btn">
                             <button className="contacts-btn" onClick={() => {
-                                setVarEdit(contact.id, contact.nome, contact.email, contact.telefone, contact.imagem_perfil);
+                                setVarEdit(contact.id, contact.nome, contact.email, contact.telefone, contact.imagem_perfil, contact.salario);
                                 setEditActive(true);
                             }}>Editar</button>
                             <DeleteButton id={contact.id} confirmDelete={ViewContact} />
@@ -41,6 +64,9 @@ function Contatos({reloadView}) {
                             <p className="contacts-info">Nome: {contact.nome}</p>
                             <p className="contacts-info">Telefone: {contact.telefone}</p>
                             <p className="contacts-info">Email: {contact.email}</p>
+                            <p className="contacts-info">Salário R$: {contact.salario}</p>
+                            <p className="contacts-info">Salário $: {parseFloat(contact.salario) * Dollar}</p>
+                            <p className="contacts-info">Salário €: {parseFloat(contact.salario) * Euro}</p>
                         </div>
                     </div>
                 )));
@@ -63,22 +89,26 @@ function Contatos({reloadView}) {
             </div>
             {editActivee ? <div  className="contacts-edit">
                 <div className="input-content">
-                    <label htmlFor="name" className="input-text">Nome</label>
+                    <label htmlFor="editName" className="input-text">Nome</label>
                     <input type="text" id="editName" name="editName" className="input-info" value={editName} onChange={(e) => {setEditName(e.target.value), console.log(e.target.value, editName, editEmail)}} />
                 </div>
                 <div className="input-content">
-                    <label htmlFor="tel" className="input-text">Telefone</label>
+                    <label htmlFor="editTel" className="input-text">Telefone</label>
                     <input type="tel" id="editTel" name="tel" className="input-info" value={editTel} onChange={(e) => setEditTel(e.target.value)} />
                 </div>
                 <div className="input-content">
-                    <label htmlFor="email" className="input-text">Email</label>
+                    <label htmlFor="editEmail" className="input-text">Email</label>
                     <input type="email" id="editEmail" name="editEmail" className="input-info" value={editEmail} onChange={(e) => setEditEmail(e.target.value)} />
                 </div>
                 <div className="input-content">
-                    <label htmlFor="img-profile" className="input-text">Imagem de perfil(Url)</label>
+                    <label htmlFor="EditSalario" className="input-text">Salário</label>
+                    <input type="text" id="editSalario" name="editSalario" className="input-info" value={editSalario} onChange={(e) => setEditSalario(e.target.value)} />
+                </div>
+                <div className="input-content">
+                    <label htmlFor="editImg-profile" className="input-text">Imagem de perfil(Url)</label>
                     <input id="editImg-profile" name="editImg-profile" className="input-info" type="url" value={editImgProfile} onChange={(e) => setEditImgProfile(e.target.value)} />
                 </div>
-                <EditButton id={editId} nameUser={editName} email={editEmail} tel={editTel} imgProfile={editImgProfile} confirmEdit={ViewContact} />
+                <EditButton id={editId} nameUser={editName} email={editEmail} tel={editTel} imgProfile={editImgProfile} salario={editSalario} confirmEdit={ViewContact} />
                 <button className="btn-cancel" onClick={() => setEditActive(false)}>Cancelar</button>
             </div> : null}
         </>

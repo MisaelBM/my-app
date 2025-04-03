@@ -7,16 +7,17 @@ function Cadastro() {
     const [email, setEmail] = useState('');
     const [tel, setTel] = useState('');
     const [imgProfile, setImgProfile] = useState("");
+    const [salario, setSalario] = useState('');
     const [reload, setReload] = useState(0);
 
     function HandleSubmit(e) {
         e.preventDefault();
-        if (nameUser === '' || email === '' || tel === '' || imgProfile === '') {
+        if (nameUser === '' || email === '' || tel === '' || imgProfile === '' || salario === '') {
             return alert('Preencha todos os campos');
         };
         
-        const formData = `nameUser=${nameUser}&email=${email}&tel=${tel}&imgProfile=${imgProfile}`;
-        fetch("http://localhost/AddContactServer.php", {
+        const formData = `nameUser=${nameUser}&email=${email}&tel=${tel}&imgProfile=${imgProfile}$salario=${salario}`;
+        fetch("https://sistemadecontroledeterritório.com/phpServer/AddContactServer.php", {
             method: "POST",
             body: formData,
             headers: {
@@ -28,6 +29,7 @@ function Cadastro() {
                 setEmail('');
                 setTel('');
                 setImgProfile('');
+                setSalario('');
                 setReload(reload + 1);
             })
             .catch(error => console.error("Erro no upload", error));
@@ -51,6 +53,10 @@ function Cadastro() {
                         <div className="input-content">
                             <label htmlFor="email" className="input-text">Email</label>
                             <input type="email" id="email" name="email" className="input-info" value={email} onChange={(e) => setEmail(e.target.value)} />
+                        </div>
+                        <div className="input-content">
+                            <label htmlFor="salario" className="input-text">Salário</label>
+                            <input type="text" id="salario" name="salario" className="input-info" value={salario} onChange={(e) => setSalario(e.target.value)} />
                         </div>
                         <div className="input-content">
                             <label htmlFor="img-profile" className="input-text">Imagem de perfil(Url)</label>

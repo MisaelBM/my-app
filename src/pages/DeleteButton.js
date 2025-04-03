@@ -2,7 +2,7 @@ import React from "react";
 
 function DeleteButton({id, confirmDelete}) {
     const DeleteContact = async(idElement) => {
-        fetch(`http://localhost/deleteContactServer.php?id=${idElement}`, {
+        fetch(`https://sistemadecontroledeterritório.com/phpServer/deleteContactServer.php?id=${idElement}`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json"
