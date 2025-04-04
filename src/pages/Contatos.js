@@ -3,7 +3,7 @@ import DeleteButton from './DeleteButton';
 import EditButton from './EditButton';
 import { useEffect, useState } from 'react';
 
-function Contatos({reloadView}) {
+function Contatos({reloadView, Euro, Dollar}) {
     const [response, setResponse] = useState('');
     const [editName, setEditName] = useState('');
     const [editEmail, setEditEmail] = useState('');
@@ -11,29 +11,8 @@ function Contatos({reloadView}) {
     const [editImgProfile, setEditImgProfile] = useState('');
     const [editSalario, setEditSalario] = useState('');
     const [editId, setEditId] = useState('');
-    const [Dollar, setDollar] = useState(0);
-    const [Euro, setEuro] = useState(0);
     const [editActivee, setEditActive] = useState(false);
-    
-    const fetchCurrencyRates = async () => {
-        fetch(`https://economia.awesomeapi.com.br/last/USD-BRL`, {
-            method: "GET"
-        }).then(response => response.json())
-        .then(data => {
-            setDollar((1 / data.USDBRL.bid).toFixed(2));
-        })
-        .catch(error => console.error);
-        fetch(`https://economia.awesomeapi.com.br/last/EUR-BRL`, {
-            method: "GET"
-        }).then(response => response.json())
-        .then(data => {
-            setEuro((1 / data.EURBRL.bid).toFixed(2));    
-        })
-        .catch(error => console.error("Erro no upload", error));
-    };
-    
-    fetchCurrencyRates();
-    
+
     const setVarEdit = (id, name, email, tel, imgProfile, salario) => {
         setEditName(name);
         setEditEmail(email);
@@ -48,7 +27,6 @@ function Contatos({reloadView}) {
             method: "GET"
         }).then(response => response.json())
             .then(data => {
-                console.log(data);
                 setEditActive(false);
                 setResponse(data.map((contact) => (
                     <div className="contacts-content" key={contact.id}>
@@ -65,8 +43,8 @@ function Contatos({reloadView}) {
                             <p className="contacts-info">Telefone: {contact.telefone}</p>
                             <p className="contacts-info">Email: {contact.email}</p>
                             <p className="contacts-info">Salário R$: {contact.salario}</p>
-                            <p className="contacts-info">Salário $: {parseFloat(contact.salario) * Dollar}</p>
-                            <p className="contacts-info">Salário €: {parseFloat(contact.salario) * Euro}</p>
+                            <p className="contacts-info">Salário $: {contact.salario_eur}</p>
+                            <p className="contacts-info">Salário €: {contact.salario_usd}</p>
                         </div>
                     </div>
                 )));
@@ -75,7 +53,7 @@ function Contatos({reloadView}) {
     };
 
     useEffect(() => {
-        ViewContact();     
+        ViewContact();    
     }, [reloadView]);
 
     return (
@@ -108,7 +86,7 @@ function Contatos({reloadView}) {
                     <label htmlFor="editImg-profile" className="input-text">Imagem de perfil(Url)</label>
                     <input id="editImg-profile" name="editImg-profile" className="input-info" type="url" value={editImgProfile} onChange={(e) => setEditImgProfile(e.target.value)} />
                 </div>
-                <EditButton id={editId} nameUser={editName} email={editEmail} tel={editTel} imgProfile={editImgProfile} salario={editSalario} confirmEdit={ViewContact} />
+                <EditButton id={editId} nameUser={editName} email={editEmail} tel={editTel} imgProfile={editImgProfile} salario={editSalario} confirmEdit={ViewContact} Euro={Euro} Dollar={Dollar} />
                 <button className="btn-cancel" onClick={() => setEditActive(false)}>Cancelar</button>
             </div> : null}
         </>
