@@ -1,8 +1,9 @@
 import React from 'react';
+import { useState } from 'react';
 
-function EditButton({id, nameUser, tel, email, imgProfile, salario, confirmEdit}) {
+function EditButton({id, nameUser, tel, email, imgProfile, salario, confirmEdit, Euro, Dollar}) {
     const handleEdit = async() => {
-        fetch(`https://sistemadecontroledeterritório.com/phpServer/editContactServer.php?id=${id}&nameUser=${nameUser}&tel=${tel}&email=${email}&imgProfile=${imgProfile}&salario=${salario}`, {
+        await fetch(`https://sistemadecontroledeterritório.com/phpServer/editContactServer.php?id=${id}&nameUser=${nameUser}&tel=${tel}&email=${email}&imgProfile=${imgProfile}&salario=${salario}&salarioeur=${parseFloat(salario) * Euro}&salariousd=${parseFloat(salario) * Dollar}`, {
             method: "PUT"
         }).then(() => {
                 console.log("Editado com sucesso");
