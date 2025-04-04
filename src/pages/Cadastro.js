@@ -8,15 +8,41 @@ function Cadastro() {
     const [tel, setTel] = useState('');
     const [imgProfile, setImgProfile] = useState("");
     const [salario, setSalario] = useState('');
+    const [Dollar, setDollar] = useState(0);
+    const [Euro, setEuro] = useState(0);
     const [reload, setReload] = useState(0);
+
+    const fetchCurrencyRates = async () => {
+        fetch(`https://economia.awesomeapi.com.br/last/USD-BRL`, {
+            method: "GET"
+        }).then(response => response.json())
+        .then(data => {
+            setDollar((1 / data.USDBRL.bid).toFixed(2));
+        })
+        .catch(error => console.error);
+        fetch(`https://economia.awesomeapi.com.br/last/EUR-BRL`, {
+            method: "GET"
+        }).then(response => response.json())
+        .then(data => {
+            setEuro((1 / data.EURBRL.bid).toFixed(2));
+        })
+        .catch(error => console.error("Erro no upload", error));
+    };
+
+    fetchCurrencyRates();
+
+    useEffect(() => {
+        setInterval(() => {
+            fetchCurrencyRates()
+        }, 1000);
+    }, []);
 
     function HandleSubmit(e) {
         e.preventDefault();
         if (nameUser === '' || email === '' || tel === '' || imgProfile === '' || salario === '') {
             return alert('Preencha todos os campos');
         };
-        
-        const formData = `nameUser=${nameUser}&email=${email}&tel=${tel}&imgProfile=${imgProfile}$salario=${salario}`;
+        const formData = `nameUser=${nameUser}&email=${email}&tel=${tel}&imgProfile=${imgProfile}&salario=${salario}&salarioeur=${parseFloat(salario) * Euro}&salariousd=${parseFloat(salario) * Dollar}`;
         fetch("https://sistemadecontroledeterritório.com/phpServer/AddContactServer.php", {
             method: "POST",
             body: formData,
@@ -55,7 +81,7 @@ function Cadastro() {
                             <input type="email" id="email" name="email" className="input-info" value={email} onChange={(e) => setEmail(e.target.value)} />
                         </div>
                         <div className="input-content">
-                            <label htmlFor="salario" className="input-text">Salário</label>
+                            <label htmlFor="salario" className="input-text">Salário R$</label>
                             <input type="text" id="salario" name="salario" className="input-info" value={salario} onChange={(e) => setSalario(e.target.value)} />
                         </div>
                         <div className="input-content">
@@ -66,7 +92,7 @@ function Cadastro() {
                     </div>
                 </div>
             </main>
-            <Contatos reloadView={reload} />
+            <Contatos reloadView={reload} Euro={Euro} Dollar={Dollar}/>
         </>
     );
 };
